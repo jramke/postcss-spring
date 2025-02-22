@@ -1,0 +1,51 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	border: 0 solid;
+}
+
+#app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 5rem;
+    min-height: 100svh;
+}
+
+.box {
+    width: 100px;
+    height: 100px;
+    background: orange;
+
+    // transition-duration: spring-duration(200), spring-duration(200);
+    // transition-property: transform, scale;
+    // transition-timing-function: spring-bounce(0), spring-bounce(70);
+
+    transition: transform spring-duration(200) spring-bounce(0), scale spring-duration(400) spring-bounce(70);
+
+    // transition: transform spring-duration(200) spring-bounce(30);
+
+    transform: translateX(-100px);
+    scale: 0.8;
+    &.move {
+        transform: translateX(100px);
+        scale: 1.4;
+    }
+
+    // animation: move spring-duration(200) spring-bounce(30) infinite alternate;
+}
+
+@keyframes move {
+    from {
+        transform: translateX(-100px);
+        scale: 0.8;
+    }
+    to {
+        transform: translateX(100px);
+        scale: 1.4;
+    }
+}
