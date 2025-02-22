@@ -15,7 +15,10 @@
   },
   "author": "jramke <jstrmk@gmail.com>",
   "license": "MIT",
-  "repository": "https://github.com/jramke/postcss-spring",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jramke/postcss-spring.git"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
