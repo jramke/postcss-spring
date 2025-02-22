@@ -1,6 +1,6 @@
 {
   "name": "postcss-spring",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PostCSS plugin that helps you with spring easings",
   "keywords": [
     "postcss",
