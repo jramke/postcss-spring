@@ -3,4 +3,7 @@ const { SpringPlugin } = require("./src");
 /**
  * @type {import('postcss').PluginCreator}
  */
-module.exports = SpringPlugin;
+module.exports = (options = {}) => { 
+    return SpringPlugin(options);
+}
+module.exports.postcss = true
