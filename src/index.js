@@ -57,7 +57,7 @@ function SpringPlugin(options) {
                 });
                 fallbacks.push({
                     prop: `${CSS_VAR_PREFIX}-easing-${index}`,
-                    value: 'ease',
+                    value: options.fallbackEasing ?? 'ease',
                 });
             });
             multipliers.forEach((multiplier, index) => {

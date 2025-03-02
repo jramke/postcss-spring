@@ -3,4 +3,9 @@ module.exports = {
 	plugins: [
 		require("../")
 	],
+	// plugins: {
+	// 	'postcss-spring': {
+	// 		fallbackEasing: 'linear'
+	// 	}
+	// }
 };
