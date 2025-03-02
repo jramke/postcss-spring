@@ -5,6 +5,8 @@ Define just **two parameters** and let the plugin do the rest.
 
 **Disclaimer:** All credits goes to [Kevin Grajeda](https://github.com/KevinGrajeda) and [Jake Archibald](https://github.com/jakearchibald/). This Plugin is a port of Kevin's `tailwindcss-spring` plugin to PostCSS.
 
+This plugin also includes **fallback support** for the `linear()` function in older browsers. You can configure the `fallbackEasing` in the plugins options. The default is `ease`.
+
 ## Installation
 
 ```bash
