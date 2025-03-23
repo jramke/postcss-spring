@@ -3,14 +3,20 @@ const { CSS_VAR_PREFIX } = require("./constants");
 
 /**
  * @type {import('postcss').PluginCreator}
- */
+*/
 function SpringPlugin(options) {
+    let easingsCache = new Map();
+    let rootRule = null;
+
     /**
      * @type {import('postcss').Plugin}
      */
     const plugin =  {
         postcssPlugin: "postcss-spring",
-        Declaration (node, { AtRule }) {
+        Once(root, { Rule }) {
+            rootRule = new Rule({ selector: ":root" });
+        },
+        Declaration (node, { AtRule, Rule }) {
             const multipliers = [];
             const easings = [];
             const durations = [];
@@ -26,7 +32,11 @@ function SpringPlugin(options) {
                 
                 const { ease, durationMultiplier } = generateEase(bounceValue);
                 multipliers.push(durationMultiplier);
-                easings.push(ease);
+                easings.push(bounceValue);
+                
+                if (!easingsCache.get(bounceValue)) {
+                    easingsCache.set(bounceValue, ease);
+                }
                 
                 return `var(${CSS_VAR_PREFIX}-easing-${easings.length - 1})`;
             });
@@ -40,26 +50,34 @@ function SpringPlugin(options) {
                     throw node.error(`Negative duration values are not allowed: ${duration}`, { word: fullString })
                 }
     
-                durations.push(duration);
+                durations.push(durationValue);
     
-                return `calc(var(${CSS_VAR_PREFIX}-duration-${durations.length - 1}) * var(${CSS_VAR_PREFIX}-duration-multiplier-${durations.length - 1}))`;
+                return `calc(${durationValue}ms * var(${CSS_VAR_PREFIX}-duration-multiplier-${durations.length - 1}))`;
             });
     
             if (easings.length === 0 && durations.length === 0) return;
     
             const parent = node.parent;
             const fallbacks = [];
+
+            easingsCache.forEach((value, key) => {
+                rootRule.append({
+                    prop: `${CSS_VAR_PREFIX}-easing-cache-${key}`,
+                    value: value,
+                });
+            });
             
-            easings.forEach((easing, index) => {
+            easings.forEach((key, index) => {
                 parent.append({
                     prop: `${CSS_VAR_PREFIX}-easing-${index}`,
-                    value: easing,
+                    value: `var(${CSS_VAR_PREFIX}-easing-cache-${key})`,
                 });
                 fallbacks.push({
                     prop: `${CSS_VAR_PREFIX}-easing-${index}`,
                     value: options.fallbackEasing ?? 'ease',
                 });
             });
+
             multipliers.forEach((multiplier, index) => {
                 parent.append({
                     prop: `${CSS_VAR_PREFIX}-duration-multiplier-${index}`,
@@ -68,12 +86,6 @@ function SpringPlugin(options) {
                 fallbacks.push({
                     prop: `${CSS_VAR_PREFIX}-duration-multiplier-${index}`,
                     value: 1,
-                });
-            });
-            durations.forEach((duration, index) => {
-                parent.append({
-                    prop: `${CSS_VAR_PREFIX}-duration-${index}`,
-                    value: `${duration}ms`,
                 });
             });
     
@@ -90,6 +102,11 @@ function SpringPlugin(options) {
             supportsRule.append(fallbackRule);
             parent.after(supportsRule);
         },
+        OnceExit(root) {
+            if (rootRule.nodes && rootRule.nodes.length > 0) {
+                root.prepend(rootRule);
+            }
+        }
     };
     return plugin;
 };
