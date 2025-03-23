@@ -3,9 +3,28 @@
 A PostCSS plugin that adds spring easings using CSS `linear()`, making it easy to incorporate spring animations into your project.
 Define just **two parameters** and let the plugin do the rest.
 
-**Disclaimer:** All credits goes to [Kevin Grajeda](https://github.com/KevinGrajeda) and [Jake Archibald](https://github.com/jakearchibald/). This Plugin is a port of Kevin's `tailwindcss-spring` plugin to PostCSS.
+**Input:**
 
-This plugin also includes **fallback support** for the `linear()` function in older browsers. You can configure the `fallbackEasing` in the plugins options. The default is `ease`.
+```css
+.my-box {
+    transition: transform spring-duration(200) spring-bounce(30);
+}
+```
+
+**Output (simplified):**
+
+```css
+.my-box {
+    transition: transform calc(200ms * 1.66) linear(...);
+}
+```
+
+**Disclaimer:** Credits goes to [Kevin Grajeda](https://github.com/KevinGrajeda) and [Jake Archibald](https://github.com/jakearchibald/). This Plugin is a port of Kevin's `tailwindcss-spring` plugin to PostCSS.
+
+## Additional Features
+
+-   **Fallback support** for the `linear()` function in older browsers. You can configure the `fallbackEasing` in the plugins options. The default is `ease`.
+-   **`linear()` function caching**. Reuse generated values for the same bounce values to keep the css as small as possible.
 
 ## Installation
 
