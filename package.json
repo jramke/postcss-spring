@@ -1,34 +1,34 @@
 {
-  "name": "postcss-spring",
-  "version": "1.1.1",
-  "description": "PostCSS plugin that helps you with spring easings",
-  "keywords": [
-    "postcss",
-    "css",
-    "postcss-plugin",
-    "postcss-spring",
-    "postcss-spring-easings"
-  ],
-  "scripts": {
-    "dev": "vite ./dev -- --verbose",
-    "test": "node --test index.test.js"
-  },
-  "author": "jramke <jstrmk@gmail.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jramke/postcss-spring.git"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "peerDependencies": {
-    "postcss": "^8.0.0"
-  },
-  "devDependencies": {
-    "postcss": "^8.5.3",
-    "postcss-scss": "^4.0.9",
-    "sass-embedded": "^1.85.0",
-    "vite": "^6.1.1"
-  }
+    "name": "postcss-spring",
+    "version": "1.1.1",
+    "description": "PostCSS plugin that helps you with spring easings",
+    "keywords": [
+        "postcss",
+        "css",
+        "postcss-plugin",
+        "postcss-spring",
+        "postcss-spring-easings"
+    ],
+    "scripts": {
+        "dev": "vite ./dev -- --verbose",
+        "test": "node --test index.test.js"
+    },
+    "author": "jramke <jstrmk@gmail.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jramke/postcss-spring.git"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "peerDependencies": {
+        "postcss": "^8.0.0"
+    },
+    "devDependencies": {
+        "postcss": "^8.5.3",
+        "postcss-scss": "^4.0.9",
+        "sass-embedded": "^1.85.0",
+        "vite": "^6.1.1"
+    }
 }

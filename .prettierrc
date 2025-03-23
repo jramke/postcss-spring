@@ -1,0 +1,17 @@
+{
+    "printWidth": 100,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "arrowParens": "avoid",
+    "semi": true,
+    "overrides": [
+        {
+            "files": ["*.scss"],
+            "options": {
+                "parser": "scss",
+                "printWidth": 99999
+            }
+        }
+    ]
+}

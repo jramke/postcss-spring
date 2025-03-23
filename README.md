@@ -17,10 +17,8 @@ And add it to your PostCSS configuration.
 
 ```js
 module.exports = {
-    plugins: [
-        require('postcss-spring')
-    ]
-}
+    plugins: [require('postcss-spring')],
+};
 ```
 
 ## Usage
@@ -49,7 +47,9 @@ You could also use different values in the same declaration like this:
 
 ```css
 .my-box {
-    transition: transform spring-duration(200) spring-bounce(0), scale spring-duration(400) spring-bounce(70);
+    transition: transform spring-duration(200) spring-bounce(0), scale spring-duration(400) spring-bounce(
+                70
+            );
 }
 ```
 
@@ -62,4 +62,5 @@ or like this:
     transition-timing-function: spring-bounce(0), spring-bounce(70);
 }
 ```
+
 _Note that we still need to declare the same spring-duration multiple times, so it can correctly pick up the generated duration multiplier of the related ease. Otherwise the transition would be off._

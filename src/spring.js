@@ -9,8 +9,7 @@ function generateEase(bounce) {
 
     const stiffness = ((2 * Math.PI) / (perceptualDuration / 1000)) ** 2;
 
-    const damping =
-        ((1 - bounce / 100) * 4 * Math.PI) / (perceptualDuration / 1000);
+    const damping = ((1 - bounce / 100) * 4 * Math.PI) / (perceptualDuration / 1000);
 
     const springSolver = createSpringSolver({
         mass: 1,
@@ -18,17 +17,11 @@ function generateEase(bounce) {
         damping,
         velocity: 0,
     });
-    const settlingDuration = calculateSettlingDuration(
-        springSolver,
-        perceptualDuration
-    );
+    const settlingDuration = calculateSettlingDuration(springSolver, perceptualDuration);
 
     const springValues = generateSpringValues(springSolver, settlingDuration);
     return {
-        ease: generateLinearSyntax(
-            normalizeTime(springValues, settlingDuration),
-            4
-        ),
+        ease: generateLinearSyntax(normalizeTime(springValues, settlingDuration), 4),
         durationMultiplier: (settlingDuration / perceptualDuration) * 1000,
     };
 }
@@ -69,9 +62,7 @@ function createSpringSolver({ mass, stiffness, damping, velocity }) {
         let displacement;
 
         if (zeta < 1) {
-            displacement =
-                Math.exp(-t * zeta * w0) *
-                (Math.cos(wd * t) + b * Math.sin(wd * t));
+            displacement = Math.exp(-t * zeta * w0) * (Math.cos(wd * t) + b * Math.sin(wd * t));
         } else {
             displacement = (1 + b * t) * Math.exp(-t * w0);
         }
@@ -100,10 +91,10 @@ function normalizeTime(points, settlingDuration) {
 }
 
 function generateLinearSyntax(points, round) {
-    const xFormat = new Intl.NumberFormat("en-US", {
+    const xFormat = new Intl.NumberFormat('en-US', {
         maximumFractionDigits: Math.max(round - 2, 0),
     });
-    const yFormat = new Intl.NumberFormat("en-US", {
+    const yFormat = new Intl.NumberFormat('en-US', {
         maximumFractionDigits: round,
     });
 
@@ -146,37 +137,33 @@ function generateLinearSyntax(points, round) {
         }
     }
 
-    const outputValues = groupedValues.map((group) => {
+    const outputValues = groupedValues.map(group => {
         const yValue = yFormat.format(group[0][1]);
 
         const regularValue = group
-            .map((value) => {
+            .map(value => {
                 const [x] = value;
                 let output = yValue;
 
                 if (!valuesWithRedundantX.has(value)) {
-                    output += " " + xFormat.format(x * 100) + "%";
+                    output += ' ' + xFormat.format(x * 100) + '%';
                 }
 
                 return output;
             })
-            .join(", ");
+            .join(', ');
 
         if (group.length === 1) return regularValue;
 
         // Maybe it's shorter to provide a value that skips steps?
         const xVals = [group[0][0], group.at(-1)[0]];
-        const positionalValues = xVals
-            .map((x) => xFormat.format(x * 100) + "%")
-            .join(" ");
+        const positionalValues = xVals.map(x => xFormat.format(x * 100) + '%').join(' ');
 
         const skipValue = `${yValue} ${positionalValues}`;
 
-        return skipValue.length > regularValue.length
-            ? regularValue
-            : skipValue;
+        return skipValue.length > regularValue.length ? regularValue : skipValue;
     });
-    return `linear(${outputValues.join(", ")})`;
+    return `linear(${outputValues.join(', ')})`;
 }
 
 // square distance from a point to a segment
