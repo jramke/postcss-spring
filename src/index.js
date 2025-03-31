@@ -72,6 +72,7 @@ function SpringPlugin(options) {
             const parent = node.parent;
             const fallbacks = [];
 
+            rootRule.removeAll();
             easingsCache.forEach((value, key) => {
                 rootRule.append({
                     prop: `${CSS_VAR_PREFIX}-easing-cache-${key}`,
