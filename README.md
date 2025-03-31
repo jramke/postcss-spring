@@ -66,9 +66,7 @@ You could also use different values in the same declaration like this:
 
 ```css
 .my-box {
-    transition: transform spring-duration(200) spring-bounce(0), scale spring-duration(400) spring-bounce(
-                70
-            );
+    transition: transform spring-duration(200) spring-bounce(0), scale spring-duration(400) spring-bounce(70);
 }
 ```
 

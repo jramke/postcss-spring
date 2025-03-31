@@ -12,6 +12,13 @@
                 "parser": "scss",
                 "printWidth": 99999
             }
+        },
+        {
+            "files": ["*.md"],
+            "options": {
+                "parser": "markdown",
+                "printWidth": 99999
+            }
         }
     ]
 }
