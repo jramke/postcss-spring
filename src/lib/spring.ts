@@ -1,10 +1,7 @@
-/**
- * All of this code is from Kevin Grajeda's tailwindcss-spring plugin.
- * All credit goes to him and Jake Archibald.
- * Original source: https://github.com/KevinGrajeda/tailwindcss-spring
- * Licensed under MIT License
- */
-function generateEase(bounce) {
+export function generateSpring(bounce: number): {
+    ease: string;
+    durationMultiplier: number;
+} {
     const perceptualDuration = 1000;
 
     const stiffness = ((2 * Math.PI) / (perceptualDuration / 1000)) ** 2;
@@ -26,13 +23,10 @@ function generateEase(bounce) {
     };
 }
 
-/**
- * This code uses components from the linear-easing-generator by Jake Archibald.
- * Original source: https://github.com/jakearchibald/linear-easing-generator
- * Licensed under the Apache License, Version 2.0
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-function calculateSettlingDuration(solver, perceptualDuration) {
+function calculateSettlingDuration(
+    solver: (t: number) => number,
+    perceptualDuration: number
+): number {
     const step = 1 / 8;
     let time = (perceptualDuration * 1.66) / 1000;
 
@@ -52,13 +46,23 @@ function calculateSettlingDuration(solver, perceptualDuration) {
     }
 }
 
-function createSpringSolver({ mass, stiffness, damping, velocity }) {
+function createSpringSolver({
+    mass,
+    stiffness,
+    damping,
+    velocity,
+}: {
+    mass: number;
+    stiffness: number;
+    damping: number;
+    velocity: number;
+}): (t: number) => number {
     const w0 = Math.sqrt(stiffness / mass);
     const zeta = damping / (2 * Math.sqrt(stiffness * mass));
     const wd = zeta < 1 ? w0 * Math.sqrt(1 - zeta * zeta) : 0;
     const b = zeta < 1 ? (zeta * w0 - velocity) / wd : -velocity + w0;
 
-    function solver(t) {
+    function solver(t: number): number {
         let displacement;
 
         if (zeta < 1) {
@@ -73,9 +77,12 @@ function createSpringSolver({ mass, stiffness, damping, velocity }) {
     return solver;
 }
 
-function generateSpringValues(springSolver, settlingDuration) {
+function generateSpringValues(
+    springSolver: (t: number) => number,
+    settlingDuration: number
+): [number, number][] {
     const samples = settlingDuration * 500;
-    let values = [];
+    let values: [number, number][] = [];
 
     for (let i = 0; i <= settlingDuration; i += 1 / samples) {
         values.push([i, springSolver(i)]);
@@ -85,12 +92,12 @@ function generateSpringValues(springSolver, settlingDuration) {
     return values;
 }
 
-function normalizeTime(points, settlingDuration) {
+function normalizeTime(points: [number, number][], settlingDuration: number): [number, number][] {
     // Normalize time to 0-1
     return points.map(([time, value]) => [time / settlingDuration, value]);
 }
 
-function generateLinearSyntax(points, round) {
+function generateLinearSyntax(points: [number, number][], round: number): string {
     const xFormat = new Intl.NumberFormat('en-US', {
         maximumFractionDigits: Math.max(round - 2, 0),
     });
@@ -98,25 +105,21 @@ function generateLinearSyntax(points, round) {
         maximumFractionDigits: round,
     });
 
-    const valuesWithRedundantX = new Set();
+    const valuesWithRedundantX = new Set<[number, number]>();
     const maxDelta = 1 / 10 ** round;
 
-    // Figure out entries that don't need an explicit position value
     for (let i = 0; i < points.length; i++) {
         const [x] = points[i];
-        // If the first item's position is 0, then we don't need to state the position
         if (i === 0) {
             if (x === 0) valuesWithRedundantX.add(points[i]);
             continue;
         }
-        // If the last entry's position is 1, and the item before it is less than 1, then we don't need to state the position
         if (i === points.length - 1) {
             const previous = points[i - 1][0];
             if (x === 1 && previous <= 1) valuesWithRedundantX.add(points[i]);
             continue;
         }
 
-        // If the position is the average of the previous and next positions, then we don't need to state the position
         const previous = points[i - 1][0];
         const next = points[i + 1][0];
 
@@ -126,12 +129,11 @@ function generateLinearSyntax(points, round) {
         if (delta < maxDelta) valuesWithRedundantX.add(points[i]);
     }
 
-    // Group into sections with same y
-    const groupedValues = [[points[0]]];
+    const groupedValues: [number, number][][] = [[points[0]]];
 
     for (const value of points.slice(1)) {
-        if (value[1] === groupedValues.at(-1)[0][1]) {
-            groupedValues.at(-1).push(value);
+        if (value[1] === groupedValues.at(-1)![0][1]) {
+            groupedValues.at(-1)!.push(value);
         } else {
             groupedValues.push([value]);
         }
@@ -155,8 +157,7 @@ function generateLinearSyntax(points, round) {
 
         if (group.length === 1) return regularValue;
 
-        // Maybe it's shorter to provide a value that skips steps?
-        const xVals = [group[0][0], group.at(-1)[0]];
+        const xVals = [group[0][0], group.at(-1)![0]];
         const positionalValues = xVals.map(x => xFormat.format(x * 100) + '%').join(' ');
 
         const skipValue = `${yValue} ${positionalValues}`;
@@ -166,15 +167,14 @@ function generateLinearSyntax(points, round) {
     return `linear(${outputValues.join(', ')})`;
 }
 
-// square distance from a point to a segment
-function getSqSegDist(p, p1, p2) {
+function getSqSegDist(p: [number, number], p1: [number, number], p2: [number, number]): number {
     let x = p1[0];
     let y = p1[1];
     let dx = p2[0] - x;
     let dy = p2[1] - y;
 
     if (dx !== 0 || dy !== 0) {
-        var t = ((p[0] - x) * dx + (p[1] - y) * dy) / (dx * dx + dy * dy);
+        const t = ((p[0] - x) * dx + (p[1] - y) * dy) / (dx * dx + dy * dy);
 
         if (t > 1) {
             x = p2[0];
@@ -191,9 +191,15 @@ function getSqSegDist(p, p1, p2) {
     return dx * dx + dy * dy;
 }
 
-function simplifyDPStep(points, first, last, sqTolerance, simplified) {
+function simplifyDPStep(
+    points: [number, number][],
+    first: number,
+    last: number,
+    sqTolerance: number,
+    simplified: [number, number][]
+): void {
     let maxSqDist = sqTolerance;
-    let index;
+    let index: number | undefined;
 
     for (let i = first + 1; i < last; i++) {
         const sqDist = getSqSegDist(points[i], points[first], points[last]);
@@ -205,28 +211,25 @@ function simplifyDPStep(points, first, last, sqTolerance, simplified) {
     }
 
     if (maxSqDist > sqTolerance) {
-        if (index - first > 1) {
-            simplifyDPStep(points, first, index, sqTolerance, simplified);
+        if (index! - first > 1) {
+            simplifyDPStep(points, first, index!, sqTolerance, simplified);
         }
 
-        simplified.push(points[index]);
+        simplified.push(points[index!]);
 
-        if (last - index > 1) {
-            simplifyDPStep(points, index, last, sqTolerance, simplified);
+        if (last - index! > 1) {
+            simplifyDPStep(points, index!, last, sqTolerance, simplified);
         }
     }
 }
 
-// simplification using Ramer-Douglas-Peucker algorithm
-function simplifyDouglasPeucker(points, tolerance) {
+function simplifyDouglasPeucker(points: [number, number][], tolerance: number): [number, number][] {
     if (points.length <= 1) return points;
     const sqTolerance = tolerance * tolerance;
     const last = points.length - 1;
-    const simplified = [points[0]];
+    const simplified: [number, number][] = [points[0]];
     simplifyDPStep(points, 0, last, sqTolerance, simplified);
     simplified.push(points[last]);
 
     return simplified;
 }
-
-module.exports = { generateEase };

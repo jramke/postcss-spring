@@ -9,9 +9,36 @@
         "postcss-spring",
         "postcss-spring-easings"
     ],
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.mjs"
+            },
+            "require": {
+                "default": "./dist/index.cjs"
+            }
+        },
+        "./runtime": {
+            "import": {
+                "types": "./dist/runtime.d.ts",
+                "default": "./dist/runtime.mjs"
+            },
+            "require": {
+                "default": "./dist/runtime.cjs"
+            }
+        }
+    },
     "scripts": {
         "dev": "vite ./dev -- --verbose",
-        "test": "node --test index.test.js"
+        "test": "node --test \"./tests/**/*.test.{js,cjs}\"",
+        "build": "unbuild"
     },
     "author": "jramke <jstrmk@gmail.com>",
     "license": "MIT",
@@ -20,15 +47,20 @@
         "url": "git+https://github.com/jramke/postcss-spring.git"
     },
     "engines": {
-        "node": ">=18.0.0"
+        "node": ">=21.0.0"
     },
     "peerDependencies": {
         "postcss": "^8.0.0"
     },
     "devDependencies": {
+        "@types/node": "^22.14.0",
         "postcss": "^8.5.3",
         "postcss-scss": "^4.0.9",
         "sass-embedded": "^1.85.0",
+        "unbuild": "^3.5.0",
         "vite": "^6.1.1"
+    },
+    "pnpm": {
+        "overrides": {}
     }
 }

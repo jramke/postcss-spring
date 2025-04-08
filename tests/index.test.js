@@ -1,15 +1,15 @@
-const postcss = require('postcss');
-const { equal } = require('node:assert');
-const { test } = require('node:test');
+import postcss from 'postcss';
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import plugin from '../dist/index.mjs';
+import { CSS_VAR_PREFIX } from '../src/lib/constants.js';
 
-const plugin = require('./');
-const { CSS_VAR_PREFIX } = require('./src/constants');
 async function run(input, output, opts = {}) {
     let result = await postcss([plugin(opts)]).process(input, {
         from: undefined,
     });
-    equal(result.css, output);
-    equal(result.warnings().length, 0);
+    assert.equal(result.css, output);
+    assert.equal(result.warnings().length, 0);
 }
 
 async function runError(input, expectedError) {
@@ -19,7 +19,7 @@ async function runError(input, expectedError) {
         });
         throw new Error(`Should have thrown an error: "${expectedError}"`);
     } catch (error) {
-        equal(error.message.includes(expectedError), true);
+        assert.ok(error.message.includes(expectedError));
     }
 }
 

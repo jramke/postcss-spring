@@ -1,24 +1,30 @@
-const { generateEase } = require('./spring');
-const { CSS_VAR_PREFIX } = require('./constants');
+import { generateSpring } from './spring';
+import { CSS_VAR_PREFIX } from './constants';
+import { PluginOptions } from './types';
+import { Plugin, Rule } from 'postcss';
+import type { PluginCreator } from 'postcss';
 
-/**
- * @type {import('postcss').PluginCreator}
- */
-function SpringPlugin(options) {
-    let easingsCache = new Map();
-    let rootRule = null;
+const plugin: PluginCreator<PluginOptions> = (options = { fallbackEasing: 'ease' }) => {
+    return SpringPlugin(options);
+};
+plugin.postcss = true;
+export default plugin;
+
+function SpringPlugin(options: PluginOptions) {
+    let easingsCache = new Map<number, string>();
+    let rootRule: Rule | null = null;
 
     /**
      * @type {import('postcss').Plugin}
      */
-    const plugin = {
+    const plugin: Plugin = {
         postcssPlugin: 'postcss-spring',
         Once(root, { Rule }) {
             rootRule = new Rule({ selector: ':root' });
         },
         Declaration(node, { AtRule, Rule }) {
-            const multipliers = [];
-            const easings = [];
+            const multipliers: number[] = [];
+            const easings: number[] = [];
             const durations = [];
 
             node.value = node.value.replace(/spring-bounce\((.*?)\)/g, (fullString, bounce) => {
@@ -35,7 +41,7 @@ function SpringPlugin(options) {
                     });
                 }
 
-                const { ease, durationMultiplier } = generateEase(bounceValue);
+                const { ease, durationMultiplier } = generateSpring(bounceValue);
                 multipliers.push(durationMultiplier);
                 easings.push(bounceValue);
 
@@ -70,18 +76,18 @@ function SpringPlugin(options) {
             if (easings.length === 0 && durations.length === 0) return;
 
             const parent = node.parent;
-            const fallbacks = [];
+            const fallbacks: { prop: string; value: string }[] = [];
 
-            rootRule.removeAll();
+            rootRule?.removeAll();
             easingsCache.forEach((value, key) => {
-                rootRule.append({
+                rootRule?.append({
                     prop: `${CSS_VAR_PREFIX}-easing-cache-${key}`,
                     value: value,
                 });
             });
 
             easings.forEach((key, index) => {
-                parent.append({
+                parent?.append({
                     prop: `${CSS_VAR_PREFIX}-easing-${index}`,
                     value: `var(${CSS_VAR_PREFIX}-easing-cache-${key})`,
                 });
@@ -92,36 +98,34 @@ function SpringPlugin(options) {
             });
 
             multipliers.forEach((multiplier, index) => {
-                parent.append({
+                parent?.append({
                     prop: `${CSS_VAR_PREFIX}-duration-multiplier-${index}`,
-                    value: multiplier,
+                    value: String(multiplier),
                 });
                 fallbacks.push({
                     prop: `${CSS_VAR_PREFIX}-duration-multiplier-${index}`,
-                    value: 1,
+                    value: '1',
                 });
             });
 
             if (fallbacks.length === 0) return;
 
-            const fallbackRule = parent.clone({ nodes: [] });
+            const fallbackRule = parent?.clone({ nodes: [] });
             fallbacks.forEach(fallback => {
-                fallbackRule.append(fallback);
+                fallbackRule?.append(fallback);
             });
             const supportsRule = new AtRule({
                 name: 'supports',
                 params: 'not (transition-timing-function: linear(0, 1))',
             });
             supportsRule.append(fallbackRule);
-            parent.after(supportsRule);
+            parent?.after(supportsRule);
         },
         OnceExit(root) {
-            if (rootRule.nodes && rootRule.nodes.length > 0) {
+            if (rootRule && rootRule.nodes && rootRule.nodes.length > 0) {
                 root.prepend(rootRule);
             }
         },
     };
     return plugin;
 }
-
-module.exports = { SpringPlugin };
