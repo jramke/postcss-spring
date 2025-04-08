@@ -81,3 +81,13 @@ or like this:
 ```
 
 _Note that we still need to declare the same spring-duration multiple times, so it can correctly pick up the generated duration multiplier of the related ease. Otherwise the transition would be off._
+
+## JavaScript Usage
+
+For advanced usage we also expose the `generateSpring` function from `postcss-spring/runtime`. You can use it to generate the linear easing and the duration multiplier and use it then like you want.
+
+```js
+import { generateSpring } from 'postcss-spring/runtime';
+
+const { durationMultiplier, ease } = generateSpring(20);
+```
